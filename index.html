@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mock Exam – Fundamentals of Programming</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+      background: #f0f4f9;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      padding: 20px;
+    }
+    .app {
+      max-width: 960px;
+      width: 100%;
+      background: #ffffff;
+      border-radius: 28px;
+      box-shadow: 0 20px 60px rgba(0, 20, 40, 0.12);
+      padding: 28px 32px 36px;
+      transition: 0.2s;
+    }
+    /* Header */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      border-bottom: 2px solid #e9edf4;
+      padding-bottom: 14px;
+      margin-bottom: 18px;
+    }
+    .title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #0b2b4a;
+      letter-spacing: -0.3px;
+    }
+    .title small {
+      font-weight: 400;
+      font-size: 0.75rem;
+      color: #5e6f8d;
+      display: block;
+      margin-top: 2px;
+    }
+    .score-badge {
+      background: #1a4b7a;
+      color: #fff;
+      padding: 7px 22px;
+      border-radius: 60px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 4px 10px rgba(26, 75, 122, 0.25);
+    }
+    .score-badge span {
+      background: rgba(255,255,255,0.2);
+      padding: 0 12px;
+      border-radius: 30px;
+      font-size: 1.1rem;
+    }
+    /* Progress */
+    .progress-wrap {
+      margin-bottom: 22px;
+    }
+    .progress-meta {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.82rem;
+      color: #3d5670;
+      font-weight: 500;
+      margin-bottom: 5px;
+    }
+    .progress-track {
+      width: 100%;
+      height: 8px;
+      background: #e2e8f0;
+      border-radius: 20px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #2563eb, #3b82f6);
+      border-radius: 20px;
+      transition: width 0.4s ease;
+    }
+    /* Section badge */
+    .section-badge {
+      display: inline-block;
+      font-weight: 700;
+      font-size: 0.7rem;
+      letter-spacing: 0.3px;
+      padding: 3px 16px;
+      border-radius: 30px;
+      margin-bottom: 10px;
+      background: #dbeafe;
+      color: #1a4b7a;
+    }
+    .section-badge.part-b {
+      background: #fce7f3;
+      color: #9d174d;
+    }
+    /* Question card */
+    .question-card {
+      animation: fadeSlide 0.3s ease;
+    }
+    @keyframes fadeSlide {
+      0% { opacity: 0.4; transform: translateY(12px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+    .q-number {
+      font-size: 0.85rem;
+      color: #5e6f8d;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    .q-text {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: #0b1e30;
+      line-height: 1.5;
+      margin-bottom: 16px;
+    }
+    .q-text .code-block {
+      background: #1e293b;
+      color: #e2e8f0;
+      padding: 12px 16px;
+      border-radius: 12px;
+      font-family: 'JetBrains Mono', 'Fira Code', monospace;
+      font-size: 0.9rem;
+      overflow-x: auto;
+      margin: 12px 0;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    .q-text .code-block .blank-input {
+      background: #2d3748;
+      border: 2px solid #4a5568;
+      color: #fbbf24;
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-family: inherit;
+      font-size: 0.9rem;
+      min-width: 60px;
+      width: auto;
+      display: inline-block;
+      text-align: center;
+    }
+    .q-text .code-block .blank-input:focus {
+      outline: none;
+      border-color: #60a5fa;
+      box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.3);
+    }
+    .q-text .code-block .blank-input:disabled {
+      opacity: 0.7;
+      border-color: #4a5568;
+    }
+    .q-text .sub-q {
+      display: block;
+      margin-top: 8px;
+      font-weight: 500;
+      color: #1f3a57;
+      font-size: 0.95rem;
+    }
+    /* Options (MCQ) */
+    .options-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin: 12px 0 10px;
+    }
+    .option-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: #f8fafc;
+      padding: 11px 18px;
+      border-radius: 14px;
+      border: 2px solid transparent;
+      transition: 0.15s;
+      cursor: pointer;
+    }
+    .option-item:hover {
+      background: #eef4ff;
+      border-color: #b7c9e6;
+    }
+    .option-item.selected {
+      background: #e0edff;
+      border-color: #2563eb;
+    }
+    .option-item.correct-reveal {
+      background: #d1fae5;
+      border-color: #059669;
+    }
+    .option-item.wrong-reveal {
+      background: #fee2e2;
+      border-color: #dc2626;
+    }
+    .option-item input[type="radio"] {
+      accent-color: #2563eb;
+      width: 18px;
+      height: 18px;
+      flex-shrink: 0;
+      cursor: pointer;
+    }
+    .option-item .opt-label {
+      font-weight: 600;
+      color: #1a2f44;
+      font-size: 0.95rem;
+      min-width: 20px;
+    }
+    .option-item .opt-text {
+      color: #1f3a57;
+      font-size: 0.95rem;
+    }
+    /* Feedback */
+    .feedback-box {
+      margin: 16px 0 12px;
+      padding: 16px 20px;
+      border-radius: 16px;
+      background: #f1f5f9;
+      border-left: 5px solid #6b7f9a;
+      display: none;
+    }
+    .feedback-box.show {
+      display: block;
+      animation: fadeSlide 0.25s ease;
+    }
+    .feedback-box.correct {
+      background: #ecfdf5;
+      border-left-color: #059669;
+    }
+    .feedback-box.wrong {
+      background: #fef2f2;
+      border-left-color: #dc2626;
+    }
+    .feedback-box .fb-result {
+      font-weight: 700;
+      font-size: 1.05rem;
+      margin-bottom: 4px;
+    }
+    .feedback-box .fb-result .icon { margin-right: 8px; }
+    .feedback-box .fb-explain {
+      color: #1f3a57;
+      line-height: 1.5;
+      margin-top: 4px;
+      font-size: 0.93rem;
+    }
+    .feedback-box .fb-answer {
+      font-weight: 600;
+      color: #0b2b4a;
+      margin-top: 6px;
+      background: #e9edf4;
+      padding: 4px 16px;
+      border-radius: 30px;
+      display: inline-block;
+      font-size: 0.88rem;
+    }
+    /* Navigation */
+    .nav-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 20px;
+      border-top: 2px solid #e9edf4;
+      padding-top: 18px;
+    }
+    .nav-group {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .btn {
+      padding: 9px 26px;
+      border: none;
+      border-radius: 60px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: 0.15s;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #e9edf4;
+      color: #1f3a57;
+    }
+    .btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.06);
+    }
+    .btn:active { transform: scale(0.97); }
+    .btn-primary {
+      background: #1a4b7a;
+      color: #fff;
+    }
+    .btn-primary:hover { background: #0f3b62; }
+    .btn-success {
+      background: #059669;
+      color: #fff;
+    }
+    .btn-success:hover { background: #047857; }
+    .btn-outline {
+      background: transparent;
+      border: 2px solid #cbd5e1;
+    }
+    .btn-outline:hover { border-color: #94a3b8; background: #f1f5f9; }
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none !important;
+      box-shadow: none !important;
+    }
+    /* Results */
+    .results-panel {
+      text-align: center;
+      padding: 30px 10px 10px;
+    }
+    .results-panel .big-score {
+      font-size: 4rem;
+      font-weight: 800;
+      color: #0b2b4a;
+      line-height: 1;
+    }
+    .results-panel .big-score span { color: #2563eb; }
+    .results-panel .sub-text {
+      font-size: 1.05rem;
+      color: #3d5670;
+      margin: 8px 0 20px;
+    }
+    .results-panel .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+      gap: 12px;
+      max-width: 400px;
+      margin: 16px auto 26px;
+    }
+    .stats-grid .stat-card {
+      background: #f8fafc;
+      border-radius: 16px;
+      padding: 12px 8px;
+    }
+    .stats-grid .stat-card .num {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: #0b2b4a;
+    }
+    .stats-grid .stat-card .label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      color: #6b7f9a;
+      letter-spacing: 0.3px;
+      font-weight: 600;
+    }
+    .results-panel .btn { font-size: 0.95rem; padding: 12px 40px; }
+    /* Responsive */
+    @media (max-width: 640px) {
+      .app { padding: 16px 14px 24px; }
+      .title { font-size: 1.05rem; }
+      .title small { font-size: 0.65rem; }
+      .score-badge { font-size: 0.75rem; padding: 4px 14px; }
+      .q-text { font-size: 1rem; }
+      .option-item { padding: 9px 12px; gap: 8px; }
+      .option-item .opt-text { font-size: 0.85rem; }
+      .btn { padding: 7px 16px; font-size: 0.75rem; }
+      .nav-row { flex-direction: column; align-items: stretch; }
+      .nav-group { justify-content: center; }
+      .results-panel .big-score { font-size: 2.8rem; }
+    }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #e9edf4; border-radius: 10px; }
+    ::-webkit-scrollbar-thumb { background: #b7c9e6; border-radius: 10px; }
+  </style>
+</head>
+<body>
+<div class="app" id="app">
+  <header class="header">
+    <div class="title">
+      📘 Mock Exam
+      <small>Fundamentals of Programming · Weeks 1–14</small>
+    </div>
+    <div class="score-badge">
+      🏆 Score <span id="scoreDisplay">0</span>
+    </div>
+  </header>
+
+  <div class="progress-wrap">
+    <div class="progress-meta">
+      <span id="qProgress">Question 1 of 150</span>
+      <span id="answeredCount">0 answered</span>
+    </div>
+    <div class="progress-track">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+  </div>
+
+  <div id="questionContainer"></div>
+  <div id="resultsContainer" style="display:none;"></div>
+</div>
+
+<script>
+// ============================================================
+//  DATA – Full 150 questions
+// ============================================================
+const QUESTIONS = [];
+
+// ---------- PART A: MCQ (Q1–100) ----------
+const mcqData = [
+  // Q1–15: Introduction & Basics
+  { q: 'What is a computer program?', opts: ['A physical component of a computer', 'A sequence of instructions to perform a task', 'A type of computer hardware', 'An operating system'], ans: 1, exp: 'A program is a set of instructions that tells the computer what to do.' },
+  { q: 'Which programming paradigm focuses on "HOW" to achieve a result through step-by-step instructions?', opts: ['Declarative programming', 'Imperative programming', 'Logic programming', 'Markup language'], ans: 1, exp: 'Imperative programming describes step-by-step how to achieve a result.' },
+  { q: 'Python is an example of which type of programming language?', opts: ['Low-level language', 'Machine language', 'High-level language', 'Assembly language'], ans: 2, exp: 'Python is a high-level language, abstracted from hardware details.' },
+  { q: 'What does a compiler do?', opts: ['Executes code line by line', 'Translates high-level code to machine code all at once', 'Converts binary to decimal', 'Writes code automatically'], ans: 1, exp: 'A compiler translates the entire source code to machine code at once.' },
+  { q: 'Which of the following is a characteristic of declarative programming?', opts: ['Focuses on step-by-step process', 'Focuses on WHAT the program should achieve', 'Uses objects and classes', 'Uses procedures and functions'], ans: 1, exp: 'Declarative programming focuses on the desired outcome (WHAT) rather than steps.' },
+  { q: 'What is the difference between a compiler and an interpreter?', opts: ['Compiler is faster than interpreter', 'Compiler translates all code at once; interpreter translates line by line', 'Interpreter is used for high-level languages only', 'Both are the same'], ans: 1, exp: 'Compiler translates entire program at once; interpreter executes line by line.' },
+  { q: 'Which of the following is NOT a pillar of computational thinking?', opts: ['Decomposition', 'Abstraction', 'Compilation', 'Pattern recognition'], ans: 2, exp: 'Compilation is not a pillar; the pillars are decomposition, abstraction, pattern recognition, and algorithms.' },
+  { q: 'What is an algorithm?', opts: ['A type of programming language', 'A step-by-step solution to solve a problem', 'A computer hardware component', 'A debugging tool'], ans: 1, exp: 'An algorithm is a finite sequence of well-defined steps to solve a problem.' },
+  { q: 'Which is NOT a key aspect of an algorithm?', opts: ['Input', 'Finite steps', 'Unlimited steps', 'Unambiguous steps'], ans: 2, exp: 'Algorithms must have finite, unambiguous steps, not unlimited.' },
+  { q: 'What is the purpose of problem decomposition?', opts: ['To combine small problems into one', 'To break down a complex problem into smaller parts', 'To ignore all problem details', 'To create unnecessary complexity'], ans: 1, exp: 'Decomposition breaks a complex problem into smaller, manageable parts.' },
+  { q: 'Which programming paradigm uses objects and classes?', opts: ['Procedural programming', 'Object-oriented programming', 'Logic programming', 'Functional programming'], ans: 1, exp: 'OOP uses objects and classes to model real-world entities.' },
+  { q: 'What is abstraction in computational thinking?', opts: ['Adding more details to a problem', 'Ignoring irrelevant information to reduce complexity', 'Making problems more complex', 'Writing code without planning'], ans: 1, exp: 'Abstraction focuses on essential details while ignoring irrelevant ones.' },
+  { q: 'Which language is NOT an example of a procedural programming language?', opts: ['C', 'Pascal', 'Prolog', 'Fortran'], ans: 2, exp: 'Prolog is a logic programming language, not procedural.' },
+  { q: 'What does the term "machine code" refer to?', opts: ['Code written in Python', 'Binary instructions that a computer can execute directly', 'Code written by machines', 'High-level programming language'], ans: 1, exp: 'Machine code consists of binary instructions directly understood by the CPU.' },
+  { q: 'What is the main advantage of using an IDE?', opts: ['It only provides a text editor', 'It offers features like syntax highlighting and debugging', 'It converts code to machine language', 'It is the only way to run Python'], ans: 1, exp: 'IDEs provide helpful tools like syntax highlighting, debugging, and code completion.' },
+  // Q16–25: Program Design
+  { q: 'What is the first step in software development?', opts: ['Writing code', 'Requirements gathering', 'Testing', 'Deployment'], ans: 1, exp: 'Requirements gathering is the first phase to understand what needs to be built.' },
+  { q: 'Which type of requirement describes WHAT the system should do?', opts: ['Non-functional requirement', 'Functional requirement', 'Performance requirement', 'Security requirement'], ans: 1, exp: 'Functional requirements specify the behavior and functions of the system.' },
+  { q: '"The system should handle 1000 users simultaneously" is an example of:', opts: ['Functional requirement', 'Non-functional requirement', 'User interface requirement', 'Data requirement'], ans: 1, exp: 'Performance requirements like handling load are non-functional.' },
+  { q: 'What does SMART stand for?', opts: ['Simple, Manageable, Achievable, Reliable, Timely', 'Specific, Measurable, Achievable, Relevant, Time-bound', 'Structured, Modular, Adaptive, Robust, Testable', 'Secure, Maintainable, Accessible, Reliable, Timely'], ans: 1, exp: 'SMART stands for Specific, Measurable, Achievable, Relevant, Time-bound.' },
+  { q: 'Which approach breaks down problems from the top?', opts: ['Bottom-up approach', 'Top-down approach', 'Side-ways approach', 'Random approach'], ans: 1, exp: 'Top-down approach starts with the big picture and breaks it down into smaller parts.' },
+  { q: 'What is an advantage of the bottom-up approach?', opts: ['Faster implementation', 'Reusability of components', 'Easier integration', 'Simpler design'], ans: 1, exp: 'Bottom-up builds reusable components that can be combined later.' },
+  { q: 'In a flowchart, what shape represents a decision?', opts: ['Oval', 'Rectangle', 'Diamond', 'Parallelogram'], ans: 2, exp: 'Diamond shape is used for decision points (yes/no).' },
+  { q: 'What is pseudocode?', opts: ['An actual programming language', 'An informal, language-agnostic way of writing program logic', 'A type of flowchart', 'Machine code'], ans: 1, exp: 'Pseudocode is a plain‑language description of algorithm steps.' },
+  { q: 'In a flowchart, what does a parallelogram represent?', opts: ['Start/End', 'Decision', 'Input/Output', 'Process'], ans: 2, exp: 'Parallelogram denotes input or output operations.' },
+  { q: 'Which of the following is NOT a technique for requirements gathering?', opts: ['Interviews', 'Surveys', 'Compilation', 'Brainstorming'], ans: 2, exp: 'Compilation is a programming step, not a requirement gathering technique.' },
+  // Q26–35: Variables & Data Types
+  { q: 'What is a variable?', opts: ['A fixed value that cannot change', 'A storage container for data identified by a name', 'A type of loop', 'A programming language'], ans: 1, exp: 'A variable is a named memory location that can store data.' },
+  { q: 'Python is a ___________ typed language.', opts: ['Statically', 'Dynamically', 'Strongly', 'Weakly'], ans: 1, exp: 'Python is dynamically typed; types are determined at runtime.' },
+  { q: 'Which of the following is a valid variable name in Python?', opts: ['1st_name', 'first_name', 'first-name', 'first name'], ans: 1, exp: 'Underscore is allowed; cannot start with digit or contain hyphen/space.' },
+  { q: 'What is the data type of `25.5` in Python?', opts: ['int', 'float', 'str', 'bool'], ans: 1, exp: 'Decimal numbers are floats.' },
+  { q: 'Which of the following is NOT a valid Python data type?', opts: ['int', 'float', 'double', 'str'], ans: 2, exp: 'Python does not have a `double` type; `float` is used for floating‑point numbers.' },
+  { q: 'What is the output of `type(True)` in Python?', opts: ['<class \'int\'>', '<class \'bool\'>', '<class \'str\'>', '<class \'float\'>'], ans: 1, exp: '`True` is a boolean value of type `bool`.' },
+  { q: 'Which naming convention is commonly used in Python?', opts: ['Pascal Case', 'Camel Case', 'Snake Case', 'Upper Case'], ans: 2, exp: 'Python uses snake_case (e.g., my_variable).' },
+  { q: 'What is chained assignment?', opts: ['Assigning different values to multiple variables', 'Assigning the same value to multiple variables in one line', 'Assigning a value to a single variable', 'Removing variables from memory'], ans: 1, exp: 'Chained assignment: `a = b = 10` assigns 10 to both a and b.' },
+  { q: 'Which of the following is a Python keyword?', opts: ['variable', 'define', 'function', 'if'], ans: 3, exp: '`if` is a Python keyword; others are not.' },
+  { q: 'What is the result of `str(25) + " years"`?', opts: ['25 years', 'TypeError', '"25 years"', '25'], ans: 0, exp: '`str(25)` converts int to string, then concatenation gives "25 years".' },
+  // Q36–50: Operators & Expressions
+  { q: 'What does the `%` operator do?', opts: ['Percentage calculation', 'Modulus (remainder)', 'Division', 'Exponentiation'], ans: 1, exp: '`%` returns the remainder of division.' },
+  { q: 'What is the output of `10 // 3`?', opts: ['3.33', '3', '4', '1'], ans: 1, exp: 'Floor division `//` gives integer quotient (3).' },
+  { q: 'What is the result of `5 ** 2`?', opts: ['10', '25', '7', '52'], ans: 1, exp: '`**` is exponentiation: 5² = 25.' },
+  { q: 'What is the difference between `=` and `==`?', opts: ['Both are the same', '`=` is assignment, `==` is comparison', '`=` is comparison, `==` is assignment', '`=` is for strings only'], ans: 1, exp: '`=` assigns a value; `==` checks equality.' },
+  { q: 'What is the output of `5 > 3 and 4 < 2`?', opts: ['True', 'False', 'Error', 'None'], ans: 1, exp: '5>3 is True, 4<2 is False, and False → False.' },
+  { q: 'What does the `not` operator do?', opts: ['Adds two values', 'Reverses a boolean value', 'Compares two values', 'Multiplies values'], ans: 1, exp: '`not` returns the logical negation of a boolean.' },
+  { q: 'What is operator precedence?', opts: ['The order in which operators are evaluated', 'The number of operators in an expression', 'The type of operators used', 'The speed of operators'], ans: 0, exp: 'Precedence determines which operator is applied first.' },
+  { q: 'What is the associativity of `**` operator?', opts: ['Left to right', 'Right to left', 'Both', 'Neither'], ans: 1, exp: 'Exponentiation is right‑associative in Python: `2 ** 3 ** 2` = `2 ** (3**2)`.' },
+  { q: 'What is the output of `(3 + 5) * 2`?', opts: ['13', '16', '11', '10'], ans: 1, exp: '3+5=8, 8*2=16.' },
+  { q: 'Which operator is used for logical AND?', opts: ['&&', 'and', '&', 'AND'], ans: 1, exp: 'Python uses `and`, `or`, `not`.' },
+  { q: 'What is the result of `15 % 4`?', opts: ['3', '4', '3.75', '1'], ans: 0, exp: '15 divided by 4 leaves remainder 3.' },
+  { q: 'What is the output of `not (5 > 3)`?', opts: ['True', 'False', 'Error', 'None'], ans: 1, exp: '5>3 is True, not True = False.' },
+  { q: 'Which of the following has the highest precedence?', opts: ['`+`', '`*`', '`()`', '`**`'], ans: 2, exp: 'Parentheses `()` have the highest precedence.' },
+  { q: 'What is the output of `10 - 3 * 2`?', opts: ['14', '7', '4', '12'], ans: 2, exp: 'Multiplication first: 3*2=6, 10-6=4.' },
+  { q: 'What is the walrus operator `:=` used for?', opts: ['Assignment and return of value', 'Comparison of values', 'Logical AND', 'Bitwise OR'], ans: 0, exp: 'Walrus operator assigns and returns the value in the same expression.' },
+  // Q51–60: Conditional Statements
+  { q: 'Which keyword is used for "else if" in Python?', opts: ['else if', 'elif', 'else if:', 'elseif'], ans: 1, exp: 'Python uses `elif` for else‑if.' },
+  { q: 'What is the output of:\n```python\nx = 5\nif x > 3:\n    print("A")\nprint("B")\n```', opts: ['A', 'B', 'A B', 'Error'], ans: 2, exp: 'Both prints execute: first prints A, then B.' },
+  { q: 'In Python, what defines a block of code?', opts: ['Curly braces', 'Indentation', 'Parentheses', 'Semicolons'], ans: 1, exp: 'Python uses indentation (whitespace) to define code blocks.' },
+  { q: 'What is the output of:\n```python\nx = 10\nif x > 5:\n    print("A")\n    print("B")\nelse:\n    print("C")\n```', opts: ['A', 'A B', 'C', 'Error'], ans: 1, exp: 'Both print statements under if execute, output "A" and "B".' },
+  { q: 'What is the ternary operator syntax in Python?', opts: ['`condition ? value_if_true : value_if_false`', '`value_if_true if condition else value_if_false`', '`if condition then value_if_true else value_if_false`', '`condition -> value_if_true : value_if_false`'], ans: 1, exp: 'Ternary: `a if condition else b`.' },
+  { q: 'What does the `pass` statement do?', opts: ['Exits the program', 'Does nothing (placeholder)', 'Skips to next iteration', 'Stops execution'], ans: 1, exp: '`pass` is a null operation; it does nothing.' },
+  { q: 'What is the output of:\n```python\nmarks = 85\nif marks >= 75:\n    grade = "A"\nelif marks >= 65:\n    grade = "B"\nelse:\n    grade = "C"\nprint(grade)\n```', opts: ['A', 'B', 'C', 'None'], ans: 0, exp: '85 >=75 → grade = "A".' },
+  { q: 'What is a nested if statement?', opts: ['An if statement inside another if statement', 'An if statement with multiple conditions', 'An if statement without else', 'An if statement at the end of code'], ans: 0, exp: 'Nested if is an if statement within another if.' },
+  { q: 'What is the output of:\n```python\nx = 7\nresult = "Even" if x % 2 == 0 else "Odd"\nprint(result)\n```', opts: ['Even', 'Odd', 'Error', 'None'], ans: 1, exp: '7%2=1 → not 0 → "Odd".' },
+  { q: 'Which statement is used to match patterns in Python 3.10+?', opts: ['switch', 'case', 'match', 'select'], ans: 2, exp: 'Python 3.10 introduced `match` for structural pattern matching.' },
+  // Q61–75: Loops
+  { q: 'What does the `range(5)` function generate?', opts: ['1, 2, 3, 4, 5', '0, 1, 2, 3, 4', '0, 1, 2, 3, 4, 5', '1, 2, 3, 4'], ans: 1, exp: 'range(5) yields numbers from 0 to 4 (stop exclusive).' },
+  { q: 'What is the output of:\n```python\nfor i in range(2, 8, 2):\n    print(i, end=" ")\n```', opts: ['2 4 6', '2 4 6 8', '1 3 5 7', '2 3 4 5 6 7'], ans: 0, exp: 'range(2,8,2) → 2,4,6.' },
+  { q: 'What is an infinite loop?', opts: ['A loop that runs once', 'A loop that never terminates', 'A loop with no statements', 'A loop with break statement'], ans: 1, exp: 'An infinite loop runs forever because its condition never becomes false.' },
+  { q: 'What does `break` do in a loop?', opts: ['Exits the loop completely', 'Skips the current iteration', 'Starts the loop again', 'Does nothing'], ans: 0, exp: '`break` terminates the loop immediately.' },
+  { q: 'What does `continue` do in a loop?', opts: ['Exits the loop completely', 'Skips the current iteration and goes to next', 'Starts the loop again', 'Does nothing'], ans: 1, exp: '`continue` skips the rest of the current iteration and proceeds to the next.' },
+  { q: 'What is the output of:\n```python\nfor i in range(3):\n    if i == 1:\n        break\n    print(i)\n```', opts: ['0', '0 1', '0 1 2', 'Error'], ans: 0, exp: 'Loop breaks when i=1, so only 0 is printed.' },
+  { q: 'What is the output of:\n```python\nfor i in range(3):\n    if i == 1:\n        continue\n    print(i)\n```', opts: ['0 1 2', '0 2', '1', '0'], ans: 1, exp: 'i=1 is skipped, so 0 and 2 are printed.' },
+  { q: 'A while loop executes until:', opts: ['The condition becomes True', 'The condition becomes False', 'The loop executes 10 times', 'The program ends'], ans: 1, exp: 'While loop continues while the condition is True; stops when False.' },
+  { q: 'What is the output of:\n```python\nx = 5\nwhile x > 0:\n    print(x)\n    x -= 1\n```', opts: ['5 4 3 2 1', '4 3 2 1', '5 4 3 2', '1 2 3 4 5'], ans: 0, exp: 'Prints 5,4,3,2,1.' },
+  { q: 'What is a nested loop?', opts: ['A loop with multiple conditions', 'A loop inside another loop', 'A loop without a condition', 'A loop that runs forever'], ans: 1, exp: 'A nested loop is a loop within another loop.' },
+  { q: 'The `else` clause in a loop executes when:', opts: ['The loop breaks', 'The loop completes without breaking', 'The loop has an error', 'The loop runs forever'], ans: 1, exp: '`else` runs if the loop finishes normally (without `break`).' },
+  { q: 'What is the output of:\n```python\nfor i in range(1, 4):\n    for j in range(1, 3):\n        print(i * j, end=" ")\n```', opts: ['1 2 2 4 3 6', '1 2 3 4 5 6', '1 2 2 4 3 6', 'Error'], ans: 0, exp: 'i=1: j=1,2 → 1,2; i=2: j=1,2 → 2,4; i=3: j=1,2 → 3,6.' },
+  { q: 'Which loop is used when the number of iterations is known?', opts: ['while loop', 'for loop', 'do-while loop', 'infinite loop'], ans: 1, exp: '`for` loop is best when the number of iterations is known in advance.' },
+  { q: 'What is the output of:\n```python\nx = 1\nwhile x < 6:\n    print(x)\n    x += 2\n```', opts: ['1 3 5', '1 2 3 4 5', '1 3 5 7', '2 4 6'], ans: 0, exp: 'x=1,3,5 then 7 stops.' },
+  { q: 'What is the output of:\n```python\nfor i in range(5):\n    if i == 3:\n        break\nelse:\n    print("Done")\n```', opts: ['0 1 2 Done', '0 1 2', '0 1 2 3', '0 1 2 3 Done'], ans: 1, exp: 'Loop breaks at i=3, so else is skipped; only prints 0,1,2.' },
+  // Q76–90: Lists, Tuples, Sets, Dictionaries
+  { q: 'Which of the following is mutable?', opts: ['Tuple', 'List', 'String', 'Set (only)'], ans: 1, exp: 'Lists are mutable; tuples and strings are immutable.' },
+  { q: 'Which of the following is immutable?', opts: ['List', 'Dictionary', 'Tuple', 'Set'], ans: 2, exp: 'Tuples are immutable.' },
+  { q: 'What is the output of:\n```python\nmy_list = [1, 2, 3, 4, 5]\nprint(my_list[1:4])\n```', opts: ['[1, 2, 3]', '[2, 3, 4]', '[1, 2, 3, 4]', '[2, 3, 4, 5]'], ans: 1, exp: 'Slicing from index 1 to 3 (4 exclusive) → [2,3,4].' },
+  { q: 'What is the output of:\n```python\nmy_tuple = (1, 2, 3)\na, b, c = my_tuple\nprint(b)\n```', opts: ['1', '2', '3', 'Error'], ans: 1, exp: 'Tuple unpacking assigns b=2.' },
+  { q: 'What is the output of:\n```python\nmy_set = {1, 2, 2, 3, 4, 4}\nprint(len(my_set))\n```', opts: ['6', '5', '4', '3'], ans: 2, exp: 'Set removes duplicates → {1,2,3,4} length 4.' },
+  { q: 'How do you access the value of a key in a dictionary?', opts: ['`dict[key]`', '`dict.value(key)`', '`dict.get(key)`', 'Both A and C'], ans: 3, exp: 'Both bracket notation and `.get()` are valid.' },
+  { q: 'What is the output of:\n```python\nstudent = {"name": "Amal", "age": 22}\nprint(student.get("grade", "N/A"))\n```', opts: ['None', 'N/A', 'Error', 'grade'], ans: 1, exp: '`.get()` returns default "N/A" if key missing.' },
+  { q: 'Which data structure does NOT allow duplicates?', opts: ['List', 'Tuple', 'Set', 'Dictionary'], ans: 2, exp: 'Sets do not allow duplicate elements.' },
+  { q: 'What is list comprehension?', opts: ['A way to create lists using loops and conditions in one line', 'A type of list that cannot be modified', 'A method to sort lists', 'A way to delete lists'], ans: 0, exp: 'List comprehension provides a concise way to create lists.' },
+  { q: 'What is the output of:\n```python\nvalues = [x ** 2 for x in range(4)]\nprint(values)\n```', opts: ['[0, 1, 4, 9]', '[1, 4, 9, 16]', '[0, 2, 4, 6]', 'Error'], ans: 0, exp: 'range(4) → 0,1,2,3 squared → [0,1,4,9].' },
+  { q: 'Which of the following is NOT a valid way to create a set?', opts: ['`my_set = {1, 2, 3}`', '`my_set = set([1, 2, 3])`', '`my_set = {}`', '`my_set = set()`'], ans: 2, exp: '`{}` creates an empty dictionary, not set.' },
+  { q: 'What is dictionary unpacking?', opts: ['Removing all keys from a dictionary', 'Extracting key-value pairs into variables', 'Converting dictionary to list', 'Sorting dictionary'], ans: 1, exp: 'Dictionary unpacking (e.g., `**dict`) extracts key‑value pairs.' },
+  { q: 'What is the output of:\n```python\nstudent = {"name": "Amal", "age": 22}\nstudent["name"] = "Kamal"\nprint(student["name"])\n```', opts: ['Amal', 'Kamal', 'Error', 'None'], ans: 1, exp: 'Dictionary values can be updated; name becomes "Kamal".' },
+  { q: 'Which method is used to remove a specific key from a dictionary?', opts: ['`delete()`', '`remove()`', '`pop()`', '`clear()`'], ans: 2, exp: '`pop(key)` removes the key and returns its value.' },
+  { q: 'What is the output of:\n```python\nmy_list = [1, 2, 3]\nmy_list.append(4)\nprint(my_list)\n```', opts: ['[1, 2, 3]', '[1, 2, 3, 4]', '[4, 1, 2, 3]', 'Error'], ans: 1, exp: '`append()` adds element to the end.' },
+  // Q91–95: Functions
+  { q: 'What is a function?', opts: ['A block of reusable code', 'A type of variable', 'A loop structure', 'A data type'], ans: 0, exp: 'A function is a reusable block of code that performs a specific task.' },
+  { q: 'What are parameters?', opts: ['Values passed when calling a function', 'Variables defined in the function definition', 'Return values from functions', 'Errors in functions'], ans: 1, exp: 'Parameters are variables in the function definition that receive arguments.' },
+  { q: 'What is a lambda function?', opts: ['A named function', 'An anonymous one-line function', 'A function with multiple lines', 'A recursive function'], ans: 1, exp: 'Lambda is an anonymous function defined with `lambda`.' },
+  { q: 'What is recursion?', opts: ['A function calling itself', 'A function calling another function', 'A type of loop', 'A type of error'], ans: 0, exp: 'Recursion is when a function calls itself.' },
+  { q: 'What does the `global` keyword do?', opts: ['Creates a new variable', 'Allows modification of a global variable inside a function', 'Deletes a global variable', 'Makes a variable local'], ans: 1, exp: '`global` is used to modify a global variable within a function.' },
+  // Q96–100: Strings & File I/O
+  { q: 'What is the output of:\n```python\ntext = "Hello World"\nprint(text[::-1])\n```', opts: ['Hello World', 'dlroW olleH', 'World Hello', 'Error'], ans: 1, exp: 'Slicing with step -1 reverses the string.' },
+  { q: 'Which method removes leading and trailing whitespace?', opts: ['`strip()`', '`trim()`', '`remove()`', '`clear()`'], ans: 0, exp: '`strip()` removes leading/trailing whitespace.' },
+  { q: 'Which mode is used to append to a file?', opts: ['\'r\'', '\'w\'', '\'a\'', '\'x\''], ans: 2, exp: '`"a"` mode opens file for appending (creates if needed).' },
+  { q: 'What is the output of:\n```python\n"Python,Java".split(",")\n```', opts: ['[\'Python\', \'Java\']', '[\'Python,Java\']', 'Error', '[\'Python\', \',\', \'Java\']'], ans: 0, exp: '`split(",")` returns a list of substrings separated by comma.' },
+  { q: 'Which statement automatically closes a file?', opts: ['`close()`', '`with`', '`open()`', '`file.close()`'], ans: 1, exp: 'The `with` statement ensures automatic closure when the block exits.' }
+];
+
+mcqData.forEach((item, idx) => {
+  QUESTIONS.push({
+    id: idx + 1,
+    part: 'A',
+    type: 'mcq',
+    question: item.q,
+    options: item.opts,
+    correct: item.ans,
+    explanation: item.exp,
+    answered: false,
+    userAnswer: null
+  });
+});
+
+// ---------- PART B: Fill-in-the-blank (Q101–150) ----------
+// Each question has code snippet with a blank (_____) and an answer.
+// We'll store as: question (with placeholder {{blank}}), code string, answer.
+const blankData = [
+  { code: 'for i in range(_____):\n    print(i)\n# Output: 0 1 2 3 4', ans: '5', exp: 'range(5) yields 0–4.' },
+  { code: 'for i in range(1, 10, _____):\n    print(i)\n# Output: 1 3 5 7 9', ans: '2', exp: 'Step of 2 gives odd numbers.' },
+  { code: 'total = 0\nfor i in range(1, _____):\n    total += i\nprint(total)\n# Output: 5050', ans: '101', exp: 'range(1,101) sums 1..100.' },
+  { code: 'count = 0\nwhile count < _____:\n    print("Hello")\n    count += 1', ans: '3', exp: 'Loop runs 3 times.' },
+  { code: 'for i in range(10):\n    if i == 5:\n        _____\n    print(i)\n# Output: 0 1 2 3 4', ans: 'break', exp: 'break exits loop when i==5.' },
+  { code: 'for i in range(6):\n    if i == 3:\n        _____\n    print(i)\n# Output: 0 1 2 4 5', ans: 'continue', exp: 'continue skips printing 3.' },
+  { code: 'my_list = [10, 20, 30, 40]\nprint(my_list[_____])\n# Output: 40', ans: '-1', exp: '-1 indexes last element.' },
+  { code: 'text = "Python"\nprint(text[_____])\n# Output: nohtyP', ans: '::-1', exp: '[::-1] reverses the string.' },
+  { code: 'num = 7\nif num % 2 _____ 0:\n    print("Even")\nelse:\n    print("Odd")\n# Output: Odd', ans: '==', exp: 'For even, remainder 0.' },
+  { code: 'name = _____("Enter your name: ")\nprint(f"Hello {name}")', ans: 'input', exp: 'input() reads user input.' },
+  { code: 'def area(length, width):\n    _____ length * width\nprint(area(5, 4))\n# Output: 20', ans: 'return', exp: 'return sends back the result.' },
+  { code: 'values = [10, 20, 30, 40]\nif 30 _____ values:\n    print("Found")\n# Output: Found', ans: 'in', exp: 'in checks membership.' },
+  { code: 'values = [1, 2, 3, 4]\nnew_values = [x + 5 _____ x in values]\nprint(new_values)\n# Output: [6, 7, 8, 9]', ans: 'for', exp: 'List comprehension syntax: for x in values' },
+  { code: 'values = [1, 2, 3, 4, 5, 6]\nevens = [x for x in values _____ x % 2 == 0]\nprint(evens)\n# Output: [2, 4, 6]', ans: 'if', exp: 'Conditional filtering with if.' },
+  { code: 'student = _____("name": "Amal", "age": 22)\nprint(student["name"])\n# Output: Amal', ans: 'dict(', exp: 'dict() constructor creates dictionary.' },
+  { code: 'student = {"name": "Amal", "age": 22}\nprint(student._____("grade", "N/A"))\n# Output: N/A', ans: 'get', exp: 'get() with default.' },
+  { code: 'my_set = {1, 2, 3}\nmy_set._____(2)\nprint(my_set)\n# Output: {1, 3}', ans: 'remove', exp: 'remove() deletes element.' },
+  { code: 'my_list = [1, 2, 3]\nmy_list._____(4)\nprint(my_list)\n# Output: [1, 2, 3, 4]', ans: 'append', exp: 'append() adds to end.' },
+  { code: 'my_list = [1, 3, 4]\nmy_list._____(1, 2)\nprint(my_list)\n# Output: [1, 2, 3, 4]', ans: 'insert', exp: 'insert(index, value).' },
+  { code: 'my_list = [1, 2, 2, 3, 2]\nprint(my_list._____(2))\n# Output: 3', ans: 'count', exp: 'count() returns occurrences.' },
+  { code: 'import os\nif os.path._____("file.txt"):\n    os.remove("file.txt")', ans: 'exists', exp: 'os.path.exists() checks if file exists.' },
+  { code: 'with open("data.txt", "r") as file:\n    content = file._____()\n    print(content)', ans: 'read', exp: 'read() reads entire content.' },
+  { code: 'with open("output.txt", "_____") as file:\n    file.write("Hello World")', ans: 'w', exp: 'Write mode (overwrites).' },
+  { code: 'with open("output.txt", "_____") as file:\n    file.write("New line")', ans: 'a', exp: 'Append mode.' },
+  { code: 'with open("data.txt") as file:\n    count = _____(1 for line in file)\n    print(count)', ans: 'sum', exp: 'sum over generator counts lines.' },
+  { code: 'text = "hello"\nprint(text._____())\n# Output: HELLO', ans: 'upper', exp: 'upper() converts to uppercase.' },
+  { code: 'text = "HELLO"\nprint(text._____())\n# Output: hello', ans: 'lower', exp: 'lower() converts to lowercase.' },
+  { code: 'text = "  Hello  "\nprint(text._____())\n# Output: Hello', ans: 'strip', exp: 'strip() removes surrounding whitespace.' },
+  { code: 'text = "Hello World"\nprint(text._____("World"))\n# Output: 6', ans: 'find', exp: 'find() returns index of substring.' },
+  { code: 'text = "Hello World"\nprint(text._____("World", "Python"))\n# Output: Hello Python', ans: 'replace', exp: 'replace() substitutes substring.' },
+  { code: 'words = ["Hello", "World"]\nprint(" "._____(words))\n# Output: Hello World', ans: 'join', exp: 'join() concatenates list elements with separator.' },
+  { code: 'text = "apple,banana,orange"\nprint(text._____(","))\n# Output: [\'apple\', \'banana\', \'orange\']', ans: 'split', exp: 'split() divides string by delimiter.' },
+  { code: 'text = "12345"\nprint(text._____())\n# Output: True', ans: 'isdigit', exp: 'isdigit() checks if all characters are digits.' },
+  { code: 'text = "Hello World"\nprint(text._____("Hello"))\n# Output: True', ans: 'startswith', exp: 'startswith() checks prefix.' },
+  { code: 'try:\n    result = 10 / 0\nexcept _____:\n    print("Cannot divide by zero")', ans: 'ZeroDivisionError', exp: 'Specific exception for division by zero.' },
+  { code: 'try:\n    with open("missing.txt") as file:\n        print(file.read())\nexcept _____:\n    print("File not found")', ans: 'FileNotFoundError', exp: 'Exception when file does not exist.' },
+  { code: 'try:\n    student = {"name": "Amal"}\n    print(student["age"])\nexcept _____:\n    print("Key not found")', ans: 'KeyError', exp: 'KeyError raised for missing dictionary key.' },
+  { code: 'def factorial(n):\n    if n <= 1:\n        return 1\n    return n * factorial(_____)', ans: 'n-1', exp: 'Recursive call with n-1.' },
+  { code: 'def fib(n):\n    if n <= 1:\n        return n\n    return fib(n-1) + fib(_____)', ans: 'n-2', exp: 'Fibonacci recursion calls n-1 and n-2.' },
+  { code: 'add = lambda a, b: _____\nprint(add(5, 3))\n# Output: 8', ans: 'a + b', exp: 'Lambda returns sum.' },
+  { code: 'is_even = lambda x: x % 2 _____ 0\nprint(is_even(4))\n# Output: True', ans: '==', exp: 'Check equality to 0 for even.' },
+  { code: 'numbers = [1, 2, 3, 4]\nsquared = list(map(lambda x: x _____, numbers))\nprint(squared)\n# Output: [1, 4, 9, 16]', ans: '**2', exp: 'Square each element.' },
+  { code: 'numbers = [1, 2, 3, 4, 5, 6]\nevens = list(filter(lambda x: x % 2 _____ 0, numbers))\nprint(evens)\n# Output: [2, 4, 6]', ans: '==', exp: 'Filter even numbers.' },
+  { code: 'x = 10\ndef modify():\n    _____ x\n    x = 20\nmodify()\nprint(x)\n# Output: 20', ans: 'global', exp: 'global allows modification of global variable.' },
+  { code: 'def calculate(a, b):\n    _____ a + b, a - b\nresult = calculate(10, 3)\nprint(result)\n# Output: (13, 7)', ans: 'return', exp: 'return multiple values as tuple.' },
+  { code: 'def get_student():\n    return ("Amal", 22, "Colombo")\nname, age, city = _____()\nprint(age)\n# Output: 22', ans: 'get_student', exp: 'Call the function to get tuple.' },
+  { code: 'my_set = _____\nprint(type(my_set))\n# Output: <class \'set\'>', ans: 'set()', exp: 'set() creates empty set.' },
+  { code: 'my_dict = _____\nprint(type(my_dict))\n# Output: <class \'dict\'>', ans: '{}', exp: '{} creates empty dictionary.' },
+  { code: 'def check_grade(mark):\n    _____ mark:\n        case 80:\n            return "A"\n        case _:\n            return "Unknown"\nprint(check_grade(80))\n# Output: A', ans: 'match', exp: 'match-case for pattern matching.' },
+  { code: 'student = {"name": "Amal", "age": 22}\ntry:\n    print(student["grade"])\n_____ KeyError:\n    print("Grade not found")', ans: 'except', exp: 'except block handles the error.' }
+];
+
+blankData.forEach((item, idx) => {
+  // Replace _____ with {{blank}} for templating
+  const codeWithPlaceholder = item.code.replace(/_____/g, '{{blank}}');
+  QUESTIONS.push({
+    id: 101 + idx,
+    part: 'B',
+    type: 'fill',
+    question: 'Complete the code to achieve the output:',
+    code: codeWithPlaceholder,
+    correct: item.ans,
+    explanation: item.exp,
+    answered: false,
+    userAnswer: null
+  });
+});
+
+// ============================================================
+//  APP STATE
+// ============================================================
+const state = {
+  current: 0,
+  total: QUESTIONS.length,
+  answeredCount: 0,
+  score: 0
+};
+
+// ============================================================
+//  RENDER
+// ============================================================
+const container = document.getElementById('questionContainer');
+const resultsContainer = document.getElementById('resultsContainer');
+const scoreDisplay = document.getElementById('scoreDisplay');
+const qProgress = document.getElementById('qProgress');
+const answeredCountEl = document.getElementById('answeredCount');
+const progressFill = document.getElementById('progressFill');
+
+function render() {
+  if (state.answeredCount === state.total) {
+    showResults();
+    return;
+  }
+
+  const q = QUESTIONS[state.current];
+  const isAnswered = q.answered;
+  const isCorrect = isAnswered && q.userAnswer === q.correct;
+
+  let partLabel = q.part === 'A' ? 'Part A – MCQ' : 'Part B – Fill in the Blank';
+  let badgeClass = q.part === 'A' ? 'section-badge' : 'section-badge part-b';
+
+  let html = `
+    <div class="question-card">
+      <div class="${badgeClass}">${partLabel}</div>
+      <div class="q-number">Question ${q.id} of ${state.total}</div>
+      <div class="q-text">${q.question}</div>
+  `;
+
+  if (q.type === 'mcq') {
+    html += `<div class="options-grid">`;
+    const letters = ['A', 'B', 'C', 'D'];
+    q.options.forEach((opt, idx) => {
+      let cls = 'option-item';
+      if (isAnswered) {
+        if (idx === q.correct) cls += ' correct-reveal';
+        else if (idx === q.userAnswer && idx !== q.correct) cls += ' wrong-reveal';
+      } else if (q.userAnswer === idx) {
+        cls += ' selected';
+      }
+      const checked = (q.userAnswer === idx) ? 'checked' : '';
+      const disabled = isAnswered ? 'disabled' : '';
+      html += `
+        <label class="${cls}">
+          <input type="radio" name="q${q.id}" value="${idx}" ${checked} ${disabled} />
+          <span class="opt-label">${letters[idx]}.</span>
+          <span class="opt-text">${opt}</span>
+        </label>
+      `;
+    });
+    html += `</div>`;
+  }
+
+  if (q.type === 'fill') {
+    // Render code with blank inputs
+    let codeHtml = q.code;
+    // Replace {{blank}} with input field
+    const parts = codeHtml.split(/(\{\{blank\}\})/);
+    let finalHtml = '';
+    parts.forEach((part, i) => {
+      if (part === '{{blank}}') {
+        const val = q.userAnswer || '';
+        const disabled = isAnswered ? 'disabled' : '';
+        finalHtml += `<input class="blank-input" type="text" value="${val}" ${disabled} />`;
+      } else {
+        finalHtml += part;
+      }
+    });
+    html += `<div class="code-block">${finalHtml}</div>`;
+  }
+
+  // Feedback
+  let feedbackHtml = '';
+  if (isAnswered) {
+    const fbClass = isCorrect ? 'correct' : 'wrong';
+    const icon = isCorrect ? '✅' : '❌';
+    const resultText = isCorrect ? 'Correct!' : 'Not quite.';
+    let answerDisplay = q.correct;
+    if (q.type === 'mcq') {
+      const letters = ['A', 'B', 'C', 'D'];
+      answerDisplay = `${letters[q.correct]}. ${q.options[q.correct]}`;
+    }
+    feedbackHtml = `
+      <div class="feedback-box show ${fbClass}">
+        <div class="fb-result"><span class="icon">${icon}</span> ${resultText}</div>
+        <div class="fb-explain">${q.explanation}</div>
+        <div class="fb-answer">✓ Correct answer: ${answerDisplay}</div>
+      </div>
+    `;
+  }
+  html += feedbackHtml;
+
+  // Navigation
+  const prevDisabled = state.current === 0 ? 'disabled' : '';
+  const nextDisabled = state.current === state.total - 1 ? 'disabled' : '';
+  const checkDisabled = isAnswered ? 'disabled' : '';
+
+  html += `
+    <div class="nav-row">
+      <div class="nav-group">
+        <button class="btn btn-outline" id="prevBtn" ${prevDisabled}>← Previous</button>
+        <button class="btn btn-outline" id="nextBtn" ${nextDisabled}>Next →</button>
+      </div>
+      <div class="nav-group">
+        <button class="btn btn-primary" id="checkBtn" ${checkDisabled}>✔ Check Answer</button>
+      </div>
+    </div>
+  `;
+
+  html += `</div>`;
+  container.innerHTML = html;
+  container.style.display = 'block';
+  resultsContainer.style.display = 'none';
+
+  // Update progress
+  const pct = (state.current / (state.total - 1)) * 100;
+  progressFill.style.width = `${Math.min(pct, 100)}%`;
+  qProgress.textContent = `Question ${state.current + 1} of ${state.total}`;
+  answeredCountEl.textContent = `${state.answeredCount} answered`;
+  scoreDisplay.textContent = state.score;
+
+  // Event listeners
+  // Radio buttons
+  document.querySelectorAll('input[type="radio"]').forEach(el => {
+    el.addEventListener('change', function() {
+      if (QUESTIONS[state.current].answered) return;
+      const val = parseInt(this.value);
+      QUESTIONS[state.current].userAnswer = val;
+      render();
+    });
+  });
+
+  // Fill-in blank inputs
+  const blankInputs = document.querySelectorAll('.blank-input');
+  blankInputs.forEach(input => {
+    input.addEventListener('input', function() {
+      if (QUESTIONS[state.current].answered) return;
+      QUESTIONS[state.current].userAnswer = this.value.trim();
+    });
+  });
+
+  // Buttons
+  document.getElementById('prevBtn').addEventListener('click', () => {
+    if (state.current > 0) { state.current--; render(); }
+  });
+  document.getElementById('nextBtn').addEventListener('click', () => {
+    if (state.current < state.total - 1) { state.current++; render(); }
+  });
+  document.getElementById('checkBtn').addEventListener('click', checkAnswer);
+}
+
+// ============================================================
+//  CHECK ANSWER
+// ============================================================
+function checkAnswer() {
+  const q = QUESTIONS[state.current];
+  if (q.answered) return;
+
+  let userAns = q.userAnswer;
+
+  // For fill, get from input (already in userAnswer via input event)
+  if (q.type === 'fill') {
+    const inputs = document.querySelectorAll('.blank-input');
+    if (inputs.length === 1) {
+      userAns = inputs[0].value.trim();
+      q.userAnswer = userAns;
+    }
+  }
+
+  if (userAns === null || userAns === undefined || userAns === '') {
+    alert('Please provide an answer.');
+    return;
+  }
+
+  // Compare
+  let isCorrect = false;
+  if (q.type === 'mcq') {
+    isCorrect = (userAns === q.correct);
+  } else {
+    // Fill: case-insensitive trim
+    isCorrect = (String(userAns).toLowerCase().trim() === String(q.correct).toLowerCase().trim());
+  }
+
+  q.answered = true;
+  state.answeredCount++;
+  if (isCorrect) state.score++;
+
+  render();
+}
+
+// ============================================================
+//  RESULTS
+// ============================================================
+function showResults() {
+  container.style.display = 'none';
+  resultsContainer.style.display = 'block';
+
+  const total = state.total;
+  const correct = state.score;
+  const wrong = total - correct;
+  const pct = Math.round((correct / total) * 100);
+
+  let grade = 'Keep Practicing 💪';
+  let emoji = '📘';
+  if (pct >= 90) { grade = 'Excellent! 🎉'; emoji = '🏆'; }
+  else if (pct >= 75) { grade = 'Good Job! 👍'; emoji = '⭐'; }
+  else if (pct >= 60) { grade = 'Not Bad! 📈'; emoji = '📊'; }
+  else if (pct >= 40) { grade = 'Keep Studying! 📖'; emoji = '📚'; }
+  else { grade = 'Review the Material 🔄'; emoji = '🔄'; }
+
+  resultsContainer.innerHTML = `
+    <div class="results-panel">
+      <div class="big-score">${emoji} <span>${correct}</span> / ${total}</div>
+      <div class="sub-text">${pct}% · ${grade}</div>
+      <div class="stats-grid">
+        <div class="stat-card"><div class="num">${correct}</div><div class="label">Correct</div></div>
+        <div class="stat-card"><div class="num">${wrong}</div><div class="label">Incorrect</div></div>
+        <div class="stat-card"><div class="num">${total}</div><div class="label">Total</div></div>
+      </div>
+      <button class="btn btn-success" id="restartBtn">🔄 Start Over</button>
+    </div>
+  `;
+
+  document.getElementById('restartBtn').addEventListener('click', () => {
+    QUESTIONS.forEach(q => { q.answered = false; q.userAnswer = null; });
+    state.current = 0; state.answeredCount = 0; state.score = 0;
+    render();
+  });
+
+  progressFill.style.width = '100%';
+  qProgress.textContent = 'Completed!';
+  answeredCountEl.textContent = `${state.answeredCount} answered`;
+  scoreDisplay.textContent = state.score;
+}
+
+// ============================================================
+//  KEYBOARD SHORTCUTS
+// ============================================================
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+    const btn = document.getElementById('nextBtn');
+    if (btn && !btn.disabled) btn.click();
+  } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+    const btn = document.getElementById('prevBtn');
+    if (btn && !btn.disabled) btn.click();
+  } else if (e.key === 'Enter') {
+    const btn = document.getElementById('checkBtn');
+    if (btn && !btn.disabled) btn.click();
+  }
+});
+
+// ============================================================
+//  INIT
+// ============================================================
+render();
+</script>
+</body>
+</html>
